@@ -155,7 +155,9 @@ class juniper_vpn(object):
         if dspreauth_cookie is None:
             raise Exception('Could not find DSPREAUTH key for host checker')
 
-        dssignin_cookie = self.find_cookie('DSSIGNIN')
+        dssignin_cookie = self.find_cookie('DSPREAUTH')
+        if dssignin_cookie is None:
+            raise Exception('Could not find DSPREAUTH key for host checker')
         t = tncc.tncc(host_only(self.args.host));
         self.cj.set_cookie(t.get_cookie(dspreauth_cookie, dssignin_cookie))
 
@@ -232,22 +234,22 @@ class juniper_vpn(object):
             arg = arg.replace('%DSID%', dsid).replace('%HOST%', self.args.host)
             action.append(arg)
 
-        p = subprocess.Popen(action, stdin=subprocess.PIPE)
-        if args.stdin is not None:
-            stdin = args.stdin.replace('%DSID%', dsid)
-            stdin = stdin.replace('%HOST%', self.args.host)
-            p.communicate(input = stdin)
-        else:
-            ret = p.wait()
-        ret = p.returncode
+        try:
+            p = subprocess.Popen(action, stdin=subprocess.PIPE)
+            if args.stdin is not None:
+                stdin = args.stdin.replace('%DSID%', dsid)
+                stdin = stdin.replace('%HOST%', self.args.host)
+                p.communicate(input=stdin)
+            else:
+                p.wait()
+        finally:
+            ret = p.returncode
+            if ret is None:
+                p.terminate()
+                ret = p.wait()
+            if ret:
+                print "openconnect exit code", ret
 
-        # Openconnect specific
-        if ret == 2:
-            self.cj.clear(self.args.host, '/', 'DSID')
-            self.r = self.br.open(self.r.geturl())
-
-def cleanup():
-    os.killpg(0, signal.SIGTERM)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(conflict_handler='resolve')
@@ -291,7 +293,5 @@ if __name__ == "__main__":
         print "--user, --host, and <action> are required parameters"
         sys.exit(1)
 
-    atexit.register(cleanup)
     jvpn = juniper_vpn(args)
     jvpn.run()
-
