@@ -197,6 +197,8 @@ class juniper_vpn(object):
         # is necessary.
         # self.br.form['realm'] = [realm]
         self.r = self.br.submit()
+        #ToDo: make this action optional
+        self.action_preauth()
 
     def action_key(self):
         # Enter key
