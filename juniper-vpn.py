@@ -19,6 +19,7 @@ import hashlib
 import shlex
 import tncc
 import re
+import time
 
 if hasattr(ssl, '_create_unverified_context'):
     ssl._create_default_https_context = ssl._create_unverified_context
@@ -187,6 +188,7 @@ class juniper_vpn(object):
         else:
             self.key = None
 
+        time.sleep(10)
         # Enter username/password
         self.br.select_form(nr=0)
         self.br.form['username'] = self.args.username
@@ -197,7 +199,9 @@ class juniper_vpn(object):
         # self.br.form['realm'] = [realm]
         self.r = self.br.submit()
         #ToDo: make this action optional
+        time.sleep(3)
         self.action_preauth()
+        time.sleep(4)
         self.action_preauth()
 
     def action_key(self):
