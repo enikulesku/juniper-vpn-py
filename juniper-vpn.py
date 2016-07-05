@@ -177,7 +177,6 @@ class juniper_vpn(object):
                 print 'Login failed (Invalid username or password?)'
                 sys.exit(1)
             else:
-                self.args.password = getpass.getpass('Password:')
                 self.needs_2factor = False
 
         if self.needs_2factor:
@@ -191,7 +190,7 @@ class juniper_vpn(object):
         # Enter username/password
         self.br.select_form(nr=0)
         self.br.form['username'] = self.args.username
-        self.br.form['password'] = self.args.password
+        self.br.form['password'] = self.args.passwd
 
         # Untested, a list of availables realms is provided when this
         # is necessary.
@@ -267,6 +266,9 @@ if __name__ == "__main__":
     parser.add_argument('action', nargs=argparse.REMAINDER,
                         metavar='<action> [<args...>]',
                         help='External command')
+
+    parser.add_argument('-p', '--passwd', type=str,
+                        help='password')
 
     args = parser.parse_args()
     args.__dict__['password'] = None
