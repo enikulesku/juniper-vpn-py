@@ -165,6 +165,13 @@ class juniper_vpn(object):
     def action_preauth(self):
         time.sleep(1)
         self.br.select_form(nr=0)
+
+        try:
+            for i in range(0, len(self.br.find_control(type="checkbox").items)):
+                self.br.find_control(type="checkbox").items[i].selected =True
+        except mechanize.ControlNotFoundError:
+            print "ignore no checkboxes"
+        self.br.select_form(nr=0)
         self.br.submit()
 
     def action_login(self):
