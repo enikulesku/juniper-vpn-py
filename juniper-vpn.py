@@ -141,6 +141,7 @@ class juniper_vpn(object):
         self.r = self.br.open(url)
         while True:
             action = self.next_action()
+            print action
             if action == 'tncc':
                 self.action_tncc()
             elif action == 'preauth':
