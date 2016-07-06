@@ -138,6 +138,10 @@ class juniper_vpn(object):
         self.r = self.br.open(url)
         while True:
             action = self.next_action()
+
+            if action == "login" and action == self.last_action:
+                raise Exception('Wrong login or password')
+
             print action
             if action == 'tncc':
                 self.action_tncc()
