@@ -119,11 +119,17 @@ class juniper_vpn(object):
                     form.find_control('sn-preauth-proceed') # Throws if not found
                     return 'preauth'
                 except mechanize.ControlNotFoundError:
-                    return 'login'
+                    try:
+                        form.find_control('sn-postauth-proceed') # Throws if not found
+                        return 'postauth'
+                    except mechanize.ControlNotFoundError:
+                        return 'login'
             elif form.name == 'frmDefender':
                 return 'key'
             elif form.name == 'frmConfirmation':
                 return 'continue'
+            elif form.name == 'DSIDConfirmForm':
+                return 'invalidateSessions'
             else:
                 raise Exception('Unknown form type:', form.name)
         return 'tncc'
@@ -139,6 +145,10 @@ class juniper_vpn(object):
                 self.action_tncc()
             elif action == 'preauth':
                 self.action_preauth()
+            elif action == 'postauth':
+                self.action_preauth()
+            elif action == 'invalidateSessions':
+                self.action_invalidateSessions()
             elif action == 'login':
                 self.action_login()
             elif action == 'key':
@@ -162,8 +172,7 @@ class juniper_vpn(object):
 
         self.r = self.br.open(self.r.geturl())
 
-    def action_preauth(self):
-        time.sleep(1)
+    def action_invalidateSessions(self):
         self.br.select_form(nr=0)
 
         try:
@@ -171,6 +180,9 @@ class juniper_vpn(object):
                 self.br.find_control(type="checkbox").items[i].selected =True
         except mechanize.ControlNotFoundError:
             print "ignore no checkboxes"
+        self.br.submit()
+
+    def action_preauth(self):
         self.br.select_form(nr=0)
         self.br.submit()
 
@@ -196,7 +208,6 @@ class juniper_vpn(object):
         else:
             self.key = None
 
-        time.sleep(1)
         # Enter username/password
         self.br.select_form(nr=0)
         self.br.form['username'] = self.args.username
@@ -206,9 +217,6 @@ class juniper_vpn(object):
         # is necessary.
         # self.br.form['realm'] = [realm]
         self.r = self.br.submit()
-        #ToDo: make this action optional
-        self.action_preauth()
-        self.action_preauth()
 
     def action_key(self):
         # Enter key
