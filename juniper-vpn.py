@@ -163,6 +163,7 @@ class juniper_vpn(object):
         self.r = self.br.open(self.r.geturl())
 
     def action_preauth(self):
+        time.sleep(1)
         self.br.select_form(nr=0)
         self.br.submit()
 
@@ -188,7 +189,7 @@ class juniper_vpn(object):
         else:
             self.key = None
 
-        time.sleep(10)
+        time.sleep(1)
         # Enter username/password
         self.br.select_form(nr=0)
         self.br.form['username'] = self.args.username
@@ -199,9 +200,7 @@ class juniper_vpn(object):
         # self.br.form['realm'] = [realm]
         self.r = self.br.submit()
         #ToDo: make this action optional
-        time.sleep(3)
         self.action_preauth()
-        time.sleep(4)
         self.action_preauth()
 
     def action_key(self):
