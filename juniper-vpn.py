@@ -12,7 +12,6 @@ import argparse
 import atexit
 import signal
 import ConfigParser
-import time
 import binascii
 import hmac
 import hashlib
@@ -128,9 +127,6 @@ class juniper_vpn(object):
                 return 'key'
             elif form.name == 'frmConfirmation':
                 return 'continue'
-            #ToDo: remove because "continue" is used instead
-            elif form.name == 'DSIDConfirmForm':
-                return 'invalidateSessions'
             else:
                 raise Exception('Unknown form type:', form.name)
         return 'tncc'
@@ -146,12 +142,9 @@ class juniper_vpn(object):
             if action == 'tncc':
                 self.action_tncc()
             elif action == 'preauth':
-                self.action_preauth()
+                self.action_continue()
             elif action == 'postauth':
-                self.action_preauth()
-            #ToDo: remove because "continue" is used instead
-            elif action == 'invalidateSessions':
-                self.action_invalidateSessions()
+                self.action_continue()
             elif action == 'login':
                 self.action_login()
             elif action == 'key':
@@ -174,21 +167,6 @@ class juniper_vpn(object):
         self.cj.set_cookie(t.get_cookie(dspreauth_cookie, dssignin_cookie))
 
         self.r = self.br.open(self.r.geturl())
-
-    #ToDo: remove because "continue" is used instead
-    def action_invalidateSessions(self):
-        self.br.select_form(nr=0)
-
-        try:
-            for i in range(0, len(self.br.find_control(type="checkbox").items)):
-                self.br.find_control(type="checkbox").items[i].selected =True
-        except mechanize.ControlNotFoundError:
-            print "ignore no checkboxes"
-        self.br.submit()
-
-    def action_preauth(self):
-        self.br.select_form(nr=0)
-        self.br.submit()
 
     def action_login(self):
         # The token used for two-factor is selected when this form is submitted.
