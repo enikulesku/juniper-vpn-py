@@ -128,6 +128,7 @@ class juniper_vpn(object):
                 return 'key'
             elif form.name == 'frmConfirmation':
                 return 'continue'
+            #ToDo: remove because "continue" is used instead
             elif form.name == 'DSIDConfirmForm':
                 return 'invalidateSessions'
             else:
@@ -148,6 +149,7 @@ class juniper_vpn(object):
                 self.action_preauth()
             elif action == 'postauth':
                 self.action_preauth()
+            #ToDo: remove because "continue" is used instead
             elif action == 'invalidateSessions':
                 self.action_invalidateSessions()
             elif action == 'login':
@@ -173,6 +175,7 @@ class juniper_vpn(object):
 
         self.r = self.br.open(self.r.geturl())
 
+    #ToDo: remove because "continue" is used instead
     def action_invalidateSessions(self):
         self.br.select_form(nr=0)
 
