@@ -25,7 +25,8 @@ import datetime
 
 debug = False
 
-ssl._create_default_https_context = ssl._create_unverified_context
+if hasattr(ssl, '_create_unverified_context'):
+    ssl._create_default_https_context = ssl._create_unverified_context
 
 """
 OATH code from https://github.com/bdauvergne/python-oath
