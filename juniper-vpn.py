@@ -315,6 +315,8 @@ class juniper_vpn(object):
             self.cj.clear(self.args.host, '/', 'DSID')
             self.r = self.br.open(self.r.geturl())
 
+        raise Exception("ok")
+
 def cleanup():
     os.killpg(0, signal.SIGTERM)
 
